@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ed25519bench</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="seed_label">Seed:\nBlank For Random</string>
+    <string name="loop_count_label">Loop Count:</string>
+    <string name="run_button_label">Run</string>
+    <string name="message_label">Message:</string>
+
+</resources>
