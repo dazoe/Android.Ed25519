@@ -62,15 +62,14 @@ public class MainActivity extends Activity implements OnClickListener {
 					e.printStackTrace();
 					return "Error";
 				}
-				byte[] hash, privateKey = null, signature = null, publicKey = null;
+				byte[] privateKey = null, signature = null, publicKey = null;
 				long stopwatch = System.currentTimeMillis();
 				long verify_time = 0;
 				int last_percent = 0;
 				int percent;
 				try {
 					for (int i = 0; i < loopCount; i++) {
-						hash = sha256.digest(seed);
-						privateKey = Ed25519.PrivateKeyFromSeed(hash);
+						privateKey = sha256.digest(seed);
 						signature = Ed25519.Sign(message, privateKey);
 						publicKey = Ed25519.PublicKeyFromPrivateKey(privateKey);
 						verify_time -= System.currentTimeMillis();

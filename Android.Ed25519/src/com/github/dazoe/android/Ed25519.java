@@ -6,11 +6,39 @@ import java.util.Arrays;
 import android.util.Log;
 
 public class Ed25519 {
-	private native static byte[] PrivateKeyFromSeedN(byte[] seed);
-	private native static byte[] PublicKeyFromSeedN(byte[] privateKey);
+	private native static byte[] ExpandPrivateKeyN(byte[] privateKey);
 	private native static byte[] SignN(byte[] message, byte[] privateKey);
 	private native static int VerifyN(byte[] message, byte[] signature, byte[] publicKey);
 
+	public static byte[] ExpandPrivateKey(byte[] privateKey) throws Exception {
+		if ((privateKey.length != 32) && (privateKey.length != 64)) throw new Exception("Invalid privateKey length, 32 bytes please");
+		if (privateKey.length == 64) { //already expanded.
+			return privateKey;
+		}
+		return ExpandPrivateKeyN(privateKey); 
+	}
+	public static byte[] PublicKeyFromPrivateKey(byte[] privateKey) throws Exception {
+		if ((privateKey.length != 32) && (privateKey.length != 64)) throw new Exception("Invalid privateKey length, 32 or 64 bytes please");
+		if (privateKey.length == 32) {
+			privateKey = ExpandPrivateKey(privateKey);
+		}
+		return Arrays.copyOfRange(privateKey, 32, 64);
+	}
+	public static byte[] Sign(byte[] message, byte[] privateKey) throws Exception {
+		if ((privateKey.length != 32) && (privateKey.length != 64)) throw new Exception("Invalid privateKey length, must be 32 or 64 bytes");
+		if (privateKey.length == 32) {
+			privateKey = ExpandPrivateKey(privateKey);
+		}
+		return SignN(message, privateKey);
+	}
+	public static int Verify(byte[] message, byte[] signature, byte[] publicKey) throws Exception {
+		if (publicKey.length != 32) throw new Exception("Invalid publicKey length, must be 32 bytes");
+		if (signature.length != 64) return -1;
+		return VerifyN(message, signature, publicKey);
+	}
+	
+	//Um, yeah, this was the best I could do with my current JNI skill level
+	// jni c code calls this for sha512.
 	private static MessageDigest SHA512_Init() {
 		Log.d("Ed25519", "SHA512_Init");
 		try {
@@ -28,30 +56,6 @@ public class Ed25519 {
 		Log.d("Ed25519", "SHA512_Final");
 		return md.digest();
 	}
-
-	public static byte[] PrivateKeyFromSeed(byte[] seed) throws Exception {
-		if (seed.length != 32) throw new Exception("Invalid seed length, must be 32 bytes");
-		Log.d("Ed25519", "1");
-		return PrivateKeyFromSeedN(seed);
-	}
-	public static byte[] PublicKeyFromSeed(byte[] seed) throws Exception {
-		if (seed.length != 32) throw new Exception("Invalid seed length, must be 32 bytes");
-		return PublicKeyFromSeedN(seed);
-	}
-	public static byte[] PublicKeyFromPrivateKey(byte[] privateKey) throws Exception {
-		if (privateKey.length != 64) throw new Exception("Invalid privateKey length, must be 64 bytes");
-		return Arrays.copyOfRange(privateKey, 32, 64);
-	}
-	public static byte[] Sign(byte[] message, byte[] privateKey) throws Exception {
-		if (privateKey.length != 64) throw new Exception("Invalid privateKey length, must be 64 bytes");
-		return SignN(message, privateKey);
-	}
-	public static int Verify(byte[] message, byte[] signature, byte[] publicKey) throws Exception {
-		if (publicKey.length != 32) throw new Exception("Invalid publicKey length, must be 32 bytes");
-		if (signature.length != 64) return -1;
-		return VerifyN(message, signature, publicKey);
-	}
-	
 	static {
 		System.loadLibrary("ed25519_android");
 	}

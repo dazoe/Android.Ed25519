@@ -4,7 +4,6 @@
 
 #ifndef _Included_com_github_dazoe_android_Ed25519
 #define _Included_com_github_dazoe_android_Ed25519
-#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,15 +13,7 @@ extern "C" {
  * Method:    PrivateKeyFromSeedN
  * Signature: ([B)[B
  */
-JNIEXPORT jbyteArray JNICALL Java_com_github_dazoe_android_Ed25519_PrivateKeyFromSeedN
-  (JNIEnv *, jclass, jbyteArray);
-
-/*
- * Class:     com_github_dazoe_android_Ed25519
- * Method:    PublicKeyFromSeedN
- * Signature: ([B)[B
- */
-JNIEXPORT jbyteArray JNICALL Java_com_github_dazoe_android_Ed25519_PublicKeyFromSeedN
+JNIEXPORT jbyteArray JNICALL Java_com_github_dazoe_android_Ed25519_ExpandPrivateKeyN
   (JNIEnv *, jclass, jbyteArray);
 
 /*
